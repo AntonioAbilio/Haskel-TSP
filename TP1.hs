@@ -12,48 +12,58 @@ type Distance = Int
 
 type RoadMap = [(City,City,Distance)]
 
-cities :: RoadMap -> [City]
-cities rm = undefined
+{- 1 -}
+cities :: RoadMap -> [City]  
+cities rm = undefined -- TODO:
 
+{- 2 -}
 areAdjacent :: RoadMap -> City -> City -> Bool
 areAdjacent [] _ _ = False
 areAdjacent (rm:rms) c1 c2 | (ac1 == c1 && ac2 == c2) || (ac1 == c2 && ac2 == c1) = True
                      | otherwise = areAdjacent rms c1 c2
                      where (ac1, ac2, _) = rm
 
+{- 3 -}
 distance :: RoadMap -> City -> City -> Maybe Distance
 distance [] _ _ = Nothing
 distance (rm:rms) c1 c2 | (ac1 == c1 && ac2 == c2) || (ac1 == c2 && ac2 == c1) = Just d
                      | otherwise = distance rms c1 c2
                      where (ac1, ac2, d) = rm
                 
+{- 4 -}
+adjacent :: RoadMap -> City -> [(City,Distance)] 
+adjacent = undefined  -- TODO:
 
--- adjacent :: RoadMap -> City -> [(City,Distance)]
--- adjacent = undefined
--- 
 -- createPath :: Path -> [(City, City)]
 -- createPath p = [(c1,c2) | (c1,c2) <- zip p (tail p)]
--- 
--- pathDistance :: RoadMap -> Path -> Maybe Distance
+
+
+{- 5 -}
+pathDistance :: RoadMap -> Path -> Maybe Distance
+pathDistance = undefined  -- TODO:
 -- pathDistance rm [] = Just 0
 -- pathDistance [] _ = Nothing
 -- pathDistance rm (p:ps) = Just (distance rm p c2 + pathDistance rm ps)
 --                   where c2 = head ps
                         
                     
-
+{- 6 -}
 rome :: RoadMap -> [City]
-rome = undefined
+rome = undefined  -- TODO:
 
+{- 7 -}
 isStronglyConnected :: RoadMap -> Bool
-isStronglyConnected = undefined
+isStronglyConnected = undefined  -- TODO:
 
+{- 8 -}
 shortestPath :: RoadMap -> City -> City -> [Path]
-shortestPath = undefined
+shortestPath = undefined  -- TODO:
 
+{- 9  -}
 travelSales :: RoadMap -> Path
-travelSales = undefined
+travelSales = undefined  -- TODO:
 
+{- 10 (ONLY FOR GROUPS OF 3) -}  
 tspBruteForce :: RoadMap -> Path
 tspBruteForce = undefined -- only for groups of 3 people; groups of 2 people: do not edit this function
 
