@@ -48,8 +48,60 @@ pathDistance = undefined  -- TODO:
                         
                     
 {- 6 -}
+-----------------------------------------------------------------------
+-- 1. Create a list that maps each city to its number of occurrences --
+-----------------------------------------------------------------------
+-- Auxiliary function that adds all the cities to a list (with duplicates)
+citiesToList :: RoadMap -> [City]
+citiesToList [] = []
+citiesToList ((c1, c2, _):xs) = c1 : c2 : citiesToList xs 
+
+-- Auxiliary function that adds a city to a *sorted* list that counts each occurrence of an element
+addToList :: City -> [(City, Int)] -> [(City, Int)]
+addToList c1 [] = [(c1, 1)]
+addToList c1 ((c2, v):xs) | c1 == c2 = (c2, v + 1):xs
+                          | otherwise = (c1, 1):(c2, v):xs
+
+-- Function that calculates the number of occurrences of each city
+cityCount :: RoadMap -> [(City, Int)]
+cityCount [] = []
+cityCount rm = foldr addToList [] (Data.List.sort (citiesToList rm)) 
+{-- 
+NOTE: list must be sorted!!!
+Example:
+    foldr addToList [] ["1", "1", "2"] = 
+    addToList "1" (addToList "1" (f "2" [])) =
+    addToList "1" (addToList "1" [("2", 1)]) =
+    addToList "1" [("1", 1), ("2", 1)] =
+    [("1", 2), ("2, 1")] =
+--}
+
+------------------------------------------------------------
+-- 2. Find the maximum number of occurrences in that list --
+------------------------------------------------------------
+-- Function that finds the maximum value of the occurrence list
+maxOccHelper :: [(City, Int)] -> Int -> Int
+maxOccHelper [] currMax = currMax
+maxOccHelper ((c1, count):xs) currMax | currMax > count = maxOccHelper xs currMax
+                                      | otherwise = maxOccHelper xs count
+
+maxOcc :: [(City, Int)] -> Int
+maxOcc [] = 0
+maxOcc [(_, v)] = v -- base case 
+maxOcc ((c1, count):xs) = maxOccHelper xs count 
+
+---------------------------------------------------------------------
+-- 3. Find the cities that have that maximum number of occurrences --
+---------------------------------------------------------------------
+maxOccCities :: [(City, Int)] -> [City]
+maxOccCities [] = []
+maxOccCities c = [c1 | (c1, count) <- c, count == maxVal]
+        where maxVal = maxOcc c
+
 rome :: RoadMap -> [City]
-rome = undefined  -- TODO:
+rome rm = maxOccCities (cityCount rm)
+
+
 
 {- 7 -}
 isStronglyConnected :: RoadMap -> Bool
