@@ -73,8 +73,17 @@ distance (rm:rms) c1 c2 | (ac1 == c1 && ac2 == c2) || (ac1 == c2 && ac2 == c1) =
                      where (ac1, ac2, d) = rm
                 
 {- 4 -}
-adjacent :: RoadMap -> City -> [(City,Distance)] 
-adjacent = undefined  -- TODO:
+{--
+--   If a cityA has a direct edge to cityB then we know that cityB is adjacent to cityA.
+--   Returns the cities adjacent to a particular city and the distance between both.
+--           an empty list if the city does not have a direct link to any other city or if roadmap is empty.
+--}
+adjacent :: RoadMap -> City -> [(City,Distance)]
+adjacent [] _ = []
+adjacent (rm:rms) city | city == fcity = (scity, distance) : adjacent rms city
+                       | city == scity = (fcity, distance) : adjacent rms city
+                       | otherwise = adjacent rms city
+                       where (fcity, scity, distance) = rm
 
 -- createPath :: Path -> [(City, City)]
 -- createPath p = [(c1,c2) | (c1,c2) <- zip p (tail p)]
