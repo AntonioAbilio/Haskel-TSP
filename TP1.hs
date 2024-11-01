@@ -13,8 +13,50 @@ type Distance = Int
 type RoadMap = [(City,City,Distance)]
 
 {- 1 -}
-cities :: RoadMap -> [City]  
-cities rm = undefined -- TODO:
+{--
+--   Helper function. Given a city and a list of cities, it checks if the given city is inside the list.
+--   Returns true if the city is inside the list.
+--           false if the city is not inside the list.
+--}
+checkIfInsideList :: City -> [City] -> Bool
+checkIfInsideList _ [] = False
+checkIfInsideList city (cm:cms) | city == cm    = True
+                                | otherwise     = checkIfInsideList city cms
+
+{--
+--   Helper Function.
+--   Given an array of cities, it extracts the first city and uses the function checkIfInsideList to see if the city is still
+--   inside the tail of the list. If it is then it it will get added later so we drop the element and call the function with the list's tail
+--   otherwise we add the element and move on to the next city in the list.
+--   Returns an array with the duplicates removed
+--}
+getUniqueCities :: [City] -> [City]
+getUniqueCities [] = []
+getUniqueCities (c:cs) = if checkIfInsideList c cs 
+                            then getUniqueCities cs 
+                         else 
+                            c : getUniqueCities cs
+
+{--
+--   Helper function.
+--   Given a roadmap, we will extract all cities from edges.
+--   Returns an array containing all cities (with duplicates).
+--}
+getAllCities :: RoadMap -> [City]
+getAllCities [] = []
+getAllCities (rm:rms) = fCity : sCity : getAllCities rms
+                      where (fCity, sCity, _) = rm
+
+{--
+--   Given a roadmap, we will return all cities that are inside the graph with no duplicates.
+--   Returns an empty list if the given RoadMap is empty.
+--           a list of all cities in the graph.
+--}
+cities :: RoadMap -> [City]
+cities [] = []
+cities rm = cities
+          where allCities = getAllCities rm
+                cities = getUniqueCities allCities
 
 {- 2 -}
 areAdjacent :: RoadMap -> City -> City -> Bool
