@@ -14,7 +14,8 @@ type RoadMap = [(City,City,Distance)]
 
 {- 1 -}
 cities :: RoadMap -> [City]  
-cities rm = undefined -- TODO:
+--cities rm = undefined -- TODO:
+cities rm = Data.List.nub [c | (c1, c2, _) <- rm, c <- [c1, c2]] -- FIXME: Are we allowed to use Data.List.nub?
 
 {- 2 -}
 areAdjacent :: RoadMap -> City -> City -> Bool
@@ -104,8 +105,46 @@ rome rm = maxOccCities (cityCount rm)
 
 
 {- 7 -}
+---------------------------------------------------
+-- 1. Choose an arbitrary city and perform a DFS --
+---------------------------------------------------
+neighbors :: RoadMap -> City -> [City]
+neighbors rm c = [c1 | (c1, c2, _) <- rm, c2 == c] ++ [c2 | (c1, c2, _) <- rm, c1 == c]
+
+containsCity :: [City] -> City -> Bool
+containsCity cities c | [c1 | c1 <- cities, c1 == c] == [] = False
+                      | otherwise = True
+
+dfsAux :: RoadMap -> [City] -> [City] -> [City]
+dfsAux _ [] visited = visited -- base case 
+dfsAux rm (currCity:rest) visited | containsCity visited currCity = dfsAux rm rest visited -- Ignore the first city (already visited)
+                                  | otherwise = dfsAux rm (currentNeighbors ++ rest) (currCity : visited)
+                                  where currentNeighbors = neighbors rm currCity
+
+dfs :: RoadMap -> City -> [City]
+dfs rm start = dfsAux rm [start] []  
+
+{-
+Example: 
+dfsAux [("0","1",4),("2","3",2)] ["0"] [] =
+dfsAux [("0","1",4),("2","3",2)] (["1"] ++ []) ("0" : []) =
+dfsAux [("0","1",4),("2","3",2)] ["1"] ["0"] =
+dfsAux [("0","1",4),("2","3",2)] (["0"] ++ ["1"]) ("1" : ["0"]) =
+dfsAux [("0","1",4),("2","3",2)] ["0", "1"] ["1", "0"] =            -- "0" is already visited
+dfsAux [("0","1",4),("2","3",2)] ["1"] ["1", "0"] =                 -- "1" is already visited
+dfsAux [("0","1",4),("2","3",2)] [] ["1", "0"] =
+["1", "0"]
+-}
+
+---------------------------------------------------------------------------------
+-- 2. Compare the DFS result size with the total number of cities in the graph --
+---------------------------------------------------------------------------------
 isStronglyConnected :: RoadMap -> Bool
-isStronglyConnected = undefined  -- TODO:
+isStronglyConnected rm = length visitedCities == length allCities
+                       where visitedCities = dfs rm (head allCities)
+                             allCities = cities rm
+
+
 
 {- 8 -}
 shortestPath :: RoadMap -> City -> City -> [Path]
