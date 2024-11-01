@@ -90,12 +90,30 @@ adjacent (rm:rms) city | city == fcity = (scity, distance) : adjacent rms city
 
 
 {- 5 -}
+{--
+--   Helper Function.
+--   This function helps 'sum' two Maybe values.
+--   Returns Just (a + b) where a and b are of type Int if a came from (Just a) and b came from (Just b).
+--           Nothing for all other cases (Nothing + Maybe = Nothing).
+--}
+addMaybes :: Maybe Int -> Maybe Int -> Maybe Int
+addMaybes (Just a) (Just b) = Just (a+b)
+addMaybes  _ _ = Nothing 
+
+
+
+{--
+--   Function that helps get the total distance of a path.
+--   The function creates a zip with path and it's tail and uses the distance function to calculate the distances between the cities,
+--   adding them to a list. Afterwards it uses foldr with the base case (empty list of distances) being Just 0 and the function addMaybes
+--   to sum all values.
+--   Returns Just Distance if the path is valid.
+--           Nothing if the path is invalid (no edge between two cities was found).
+--}
 pathDistance :: RoadMap -> Path -> Maybe Distance
-pathDistance = undefined  -- TODO:
--- pathDistance rm [] = Just 0
--- pathDistance [] _ = Nothing
--- pathDistance rm (p:ps) = Just (distance rm p c2 + pathDistance rm ps)
---                   where c2 = head ps
+pathDistance [] _ = Nothing
+pathDistance _ [] = Just 0
+pathDistance rm cs = foldr addMaybes (Just 0) [distance rm x y | (x,y) <- zip cs (tail cs)]
                         
                     
 {- 6 -}
